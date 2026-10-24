@@ -1,0 +1,10 @@
+out/
+images/
+__pycache__/
+*.pyc
+rootfs/
+*.tar.xz
+*.tar.gz
+*.meta.json
+notes.md
+SHA256SUMS

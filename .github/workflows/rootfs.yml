@@ -1,0 +1,134 @@
+name: Rootfs
+
+on:
+  schedule:
+    # Monday 04:17 UTC. The job resolves Debian stable, the newest Ubuntu
+    # LTS, and Alpine latest-stable itself, so point releases do not need
+    # a workflow edit.
+    - cron: "17 4 * * 1"
+  workflow_dispatch:
+    inputs:
+      distro:
+        description: Distro
+        type: choice
+        options:
+          - all
+          - debian
+          - ubuntu
+          - alpine
+        default: all
+      arch:
+        description: Architecture
+        type: choice
+        options:
+          - all
+          - amd64
+          - arm64
+        default: all
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/rootfs.yml"
+      - "scripts/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: boxrootfs
+  cancel-in-progress: true
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: set
+        env:
+          DISTRO: ${{ github.event.inputs.distro || 'all' }}
+          ARCH: ${{ github.event.inputs.arch || 'all' }}
+        run: |
+          {
+            echo "matrix<<EOF"
+            python3 scripts/resolve.py
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: resolve
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.resolve.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build ${{ matrix.distro }} ${{ matrix.arch }}
+        env:
+          DISTRO: ${{ matrix.distro }}
+          ARCH: ${{ matrix.arch }}
+          DISTRO_ARCH: ${{ matrix.distro_arch }}
+          UNAME: ${{ matrix.uname }}
+          QEMU: ${{ matrix.qemu }}
+          VERSION: ${{ matrix.version }}
+          CODENAME: ${{ matrix.codename }}
+          CHANNEL: ${{ matrix.channel }}
+          FILENAME: ${{ matrix.filename }}
+          UPSTREAM_URL: ${{ matrix.upstream_url }}
+          UPSTREAM_SHA256: ${{ matrix.upstream_sha256 }}
+        run: ./scripts/build.sh
+      - uses: actions/upload-artifact@v7
+        with:
+          name: rootfs-${{ matrix.distro }}-${{ matrix.arch }}
+          path: |
+            out/*.tar.xz
+            out/*.meta.json
+          if-no-files-found: error
+          retention-days: 7
+
+  release:
+    needs: build
+    if: success()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: rootfs-*
+          path: images
+          merge-multiple: true
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          base=$(date -u +%Y.%m.%d)
+          tag=$base
+          n=1
+          while gh release view "$tag" >/dev/null 2>&1; do
+            n=$((n + 1))
+            tag="${base}.${n}"
+          done
+          python3 scripts/publish.py images "$tag" "$GITHUB_REPOSITORY" latest.json notes.md
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add latest.json
+          git commit -m "Update latest.json for ${tag}"
+          git push origin HEAD:main || {
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main
+          }
+          gh release create "$tag" \
+            --target main \
+            --title "Rootfs ${tag}" \
+            --notes-file notes.md \
+            images/*.tar.xz \
+            images/SHA256SUMS \
+            images/manifest.json
