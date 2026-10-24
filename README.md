@@ -12,7 +12,7 @@ Each build publishes the current stable release of three distributions, for `amd
 | Ubuntu | newest LTS | last `Supported: 1` entry in `meta-release-lts` |
 | Alpine | `latest-stable` | upstream `alpine-minirootfs` |
 
-Debian and Ubuntu images are `minbase` plus `ca-certificates`. Alpine starts from the upstream minirootfs and adds `ca-certificates`. They are not full desktop systems. Install more packages afterwards with `apt` or `apk`.
+Debian and Ubuntu images are `minbase` plus `apt` and `ca-certificates`. Alpine starts from the upstream minirootfs and adds `ca-certificates`. They are not full desktop systems. Install more packages afterwards with `apt` or `apk`.
 
 The rootfs contents stay under each distribution's own licenses. The build scripts in this repository are MIT.
 

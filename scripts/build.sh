@@ -253,6 +253,11 @@ pack_rootfs() {
     tar -tJf "$dest" | sed -n '1,40p' >&2 || true
     exit 1
   fi
+  if [[ $DISTRO == debian || $DISTRO == ubuntu ]] \
+    && ! tar -tJf "$dest" | sed 's#^\./##' | grep -E '^usr/bin/apt-get$' >/dev/null; then
+    echo "archive is missing usr/bin/apt-get" >&2
+    exit 1
+  fi
   if tar -tvJf "$dest" | awk 'substr($0, 1, 1) ~ /^[cb]/ { found = 1 } END { exit !found }'; then
     echo "archive contains device nodes" >&2
     exit 1
@@ -315,10 +320,11 @@ build_apt() {
     )
   fi
   log "mmdebstrap $DISTRO $CODENAME $ARCH"
+  # Ubuntu does not mark apt Priority: required, so minbase alone omits it.
   "${SUDO[@]}" mmdebstrap \
     --variant=minbase \
     --architectures="$ARCH" \
-    --include=ca-certificates \
+    --include=apt,ca-certificates \
     --keyring="$keyring" \
     --aptopt='Acquire::Retries "5"' \
     --format=directory \
