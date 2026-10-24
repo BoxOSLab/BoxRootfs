@@ -103,7 +103,8 @@ enable_universe() {
 ensure_deps() {
   local pkgs=(ca-certificates curl xz-utils)
   if [[ $DISTRO == debian || $DISTRO == ubuntu ]]; then
-    pkgs+=(mmdebstrap gpg debian-archive-keyring ubuntu-archive-keyring)
+    # ubuntu-archive-keyring.gpg ships in the ubuntu-keyring package.
+    pkgs+=(mmdebstrap gpg debian-archive-keyring ubuntu-keyring)
   fi
   if [[ $ARCH == arm64 ]]; then
     pkgs+=(qemu-user-static)
@@ -229,8 +230,10 @@ finalize_rootfs() {
 pack_rootfs() {
   local dest=$1
   log "packing $dest"
+  # Write the tar to disk first. A sudo tar piped into xz loses the
+  # failure (broken stdout) and leaves a truncated archive.
   "${SUDO[@]}" tar -C "$root" \
-    --numeric-owner --owner=0 --group=0 \
+    --numeric-owner --owner=root --group=root \
     --sort=name \
     --exclude=./dev/'*' \
     --exclude=./proc/'*' \
@@ -238,11 +241,14 @@ pack_rootfs() {
     --exclude=./run/'*' \
     --exclude=./tmp/'*' \
     --exclude=./var/tmp/'*' \
-    -cf - . | xz -T0 -6 >"$dest.partial"
+    -cf "$work/archive.tar" .
+  xz -T0 -6 -c "$work/archive.tar" >"$dest.partial"
+  rm -f "$work/archive.tar"
   mv "$dest.partial" "$dest"
 
-  if ! tar -tJf "$dest" | grep -Eq '^\./(usr/)?bin/sh$'; then
-    echo "archive is missing bin/sh" >&2
+  if ! tar -tJf "$dest" | sed 's#^\./##' | grep -Eq '(^|/)bin/sh$'; then
+    echo "archive is missing bin/sh; listing:" >&2
+    tar -tJf "$dest" | head -40 >&2 || true
     exit 1
   fi
   if tar -tvJf "$dest" | awk 'substr($0, 1, 1) ~ /^[cb]/ { found = 1 } END { exit !found }'; then

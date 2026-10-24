@@ -57,6 +57,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
   build:
+    name: ${{ matrix.distro }} ${{ matrix.arch }}
     needs: resolve
     runs-on: ubuntu-latest
     timeout-minutes: 90
