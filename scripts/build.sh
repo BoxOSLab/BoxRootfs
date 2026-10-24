@@ -104,10 +104,10 @@ ensure_deps() {
   local pkgs=(ca-certificates curl xz-utils)
   if [[ $DISTRO == debian || $DISTRO == ubuntu ]]; then
     # ubuntu-archive-keyring.gpg ships in the ubuntu-keyring package.
-    pkgs+=(mmdebstrap gpg debian-archive-keyring ubuntu-keyring)
+    pkgs+=(mmdebstrap arch-test gpg debian-archive-keyring ubuntu-keyring)
   fi
   if [[ $ARCH == arm64 ]]; then
-    pkgs+=(qemu-user-static)
+    pkgs+=(qemu-user-static binfmt-support)
   fi
   log "installing host packages: ${pkgs[*]}"
   "${SUDO[@]}" apt-get update
@@ -246,9 +246,11 @@ pack_rootfs() {
   rm -f "$work/archive.tar"
   mv "$dest.partial" "$dest"
 
-  if ! tar -tJf "$dest" | sed 's#^\./##' | grep -Eq '(^|/)bin/sh$'; then
+  # Consume the whole listing: grep -q exits at bin/sh, causing SIGPIPE in
+  # tar/sed and a false failure under pipefail for otherwise valid archives.
+  if ! tar -tJf "$dest" | sed 's#^\./##' | grep -E '(^|/)bin/sh$' >/dev/null; then
     echo "archive is missing bin/sh; listing:" >&2
-    tar -tJf "$dest" | head -40 >&2 || true
+    tar -tJf "$dest" | sed -n '1,40p' >&2 || true
     exit 1
   fi
   if tar -tvJf "$dest" | awk 'substr($0, 1, 1) ~ /^[cb]/ { found = 1 } END { exit !found }'; then

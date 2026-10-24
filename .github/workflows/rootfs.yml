@@ -98,7 +98,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: main
           fetch-depth: 0
       - uses: actions/download-artifact@v8
         with:
@@ -117,19 +116,19 @@ jobs:
             tag="${base}.${n}"
           done
           python3 scripts/publish.py images "$tag" "$GITHUB_REPOSITORY" latest.json notes.md
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add latest.json
-          git commit -m "Update latest.json for ${tag}"
-          git push origin HEAD:main || {
-            git fetch origin main
-            git rebase origin/main
-            git push origin HEAD:main
-          }
           gh release create "$tag" \
-            --target main \
+            --target "$GITHUB_SHA" \
             --title "Rootfs ${tag}" \
             --notes-file notes.md \
             images/*.tar.xz \
             images/SHA256SUMS \
             images/manifest.json
+          git add latest.json
+          git -c user.name="lemonhub-io" -c user.email="lemonhub.io@icloud.com" \
+            commit -m "Update latest.json for ${tag}"
+          git push origin HEAD:main || {
+            git fetch origin main
+            git -c user.name="lemonhub-io" -c user.email="lemonhub.io@icloud.com" \
+              rebase origin/main
+            git push origin HEAD:main
+          }
