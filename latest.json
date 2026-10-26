@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "generated": "2026-10-24T15:10:58Z",
-  "release": "2026.10.24.2",
+  "generated": "2026-10-26T10:23:05Z",
+  "release": "2026.10.26",
   "repository": "https://github.com/BoxOSLab/BoxRootfs",
   "boxkernel": "https://github.com/BoxOSLab/BoxKernel",
   "images": [
@@ -15,9 +15,9 @@
       "uname": "x86_64",
       "qemu": null,
       "filename": "alpine-3.24.3-x86_64.tar.xz",
-      "sha256": "2838c7f2f6a795666efc1115493965bcaf441f71c6d454d440e4e9dd35c5be96",
-      "size": 3018828,
-      "url": "https://github.com/BoxOSLab/BoxRootfs/releases/download/2026.10.24.2/alpine-3.24.3-x86_64.tar.xz",
+      "sha256": "66d2d40e2b197797a2b2782f22604220ddfb50bf980170676154ec8ee9b648a7",
+      "size": 3019040,
+      "url": "https://github.com/BoxOSLab/BoxRootfs/releases/download/2026.10.26/alpine-3.24.3-x86_64.tar.xz",
       "upstream_sha256": "f8e1cafba9b1b283b5d30d06f9885c8d2bc161ffe9083ade8e2e157813a53407",
       "upstream_url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/releases/x86_64/alpine-minirootfs-3.24.3-x86_64.tar.gz"
     },
@@ -31,9 +31,9 @@
       "uname": "aarch64",
       "qemu": "qemu-aarch64",
       "filename": "alpine-3.24.3-aarch64.tar.xz",
-      "sha256": "719414b4c20c1c5e87bc2d73c789f886b6de72126a94603f997996cf863cbd5d",
-      "size": 3220408,
-      "url": "https://github.com/BoxOSLab/BoxRootfs/releases/download/2026.10.24.2/alpine-3.24.3-aarch64.tar.xz",
+      "sha256": "8c6b51ce8dbe282b8bf7473a65eeb661868a5af9824afe781ad5c771d487633c",
+      "size": 3223252,
+      "url": "https://github.com/BoxOSLab/BoxRootfs/releases/download/2026.10.26/alpine-3.24.3-aarch64.tar.xz",
       "upstream_sha256": "4d3f80afaebd447c5591a63a73bde380a149fe8b2d85488cafabb2ff97551f50",
       "upstream_url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/releases/aarch64/alpine-minirootfs-3.24.3-aarch64.tar.gz"
     },
@@ -47,9 +47,9 @@
       "uname": "x86_64",
       "qemu": null,
       "filename": "debian-13.7-trixie-amd64.tar.xz",
-      "sha256": "0879887519682818857cc5a792851a813c59857fb22e58ff4634f4097352b0eb",
-      "size": 32371928,
-      "url": "https://github.com/BoxOSLab/BoxRootfs/releases/download/2026.10.24.2/debian-13.7-trixie-amd64.tar.xz"
+      "sha256": "36507c1744cbbb93d5ca08d467e7fea23d9f72677bfdb9a045194323e82410d2",
+      "size": 32379704,
+      "url": "https://github.com/BoxOSLab/BoxRootfs/releases/download/2026.10.26/debian-13.7-trixie-amd64.tar.xz"
     },
     {
       "distro": "debian",
@@ -61,9 +61,9 @@
       "uname": "aarch64",
       "qemu": "qemu-aarch64",
       "filename": "debian-13.7-trixie-arm64.tar.xz",
-      "sha256": "e989d6d79e61cdc4d281b620c1a855edbfcbcf04be2ba49380f3465d64dcf126",
-      "size": 31242988,
-      "url": "https://github.com/BoxOSLab/BoxRootfs/releases/download/2026.10.24.2/debian-13.7-trixie-arm64.tar.xz"
+      "sha256": "89dba688d9fbb1eb66ea224577dfffe4514406761f4ffda8ac20fd9a600a8b7a",
+      "size": 31235028,
+      "url": "https://github.com/BoxOSLab/BoxRootfs/releases/download/2026.10.26/debian-13.7-trixie-arm64.tar.xz"
     },
     {
       "distro": "ubuntu",
@@ -75,9 +75,9 @@
       "uname": "x86_64",
       "qemu": null,
       "filename": "ubuntu-26.04.1-resolute-amd64.tar.xz",
-      "sha256": "c32751ad399c87331a1d6fd3ff69d51673fc809905b25f760709aa7715b8a794",
-      "size": 30705084,
-      "url": "https://github.com/BoxOSLab/BoxRootfs/releases/download/2026.10.24.2/ubuntu-26.04.1-resolute-amd64.tar.xz"
+      "sha256": "105d848b94ab68d638f197bbfcd19b88e62f9e2b745300cbce532cf075b20704",
+      "size": 30704648,
+      "url": "https://github.com/BoxOSLab/BoxRootfs/releases/download/2026.10.26/ubuntu-26.04.1-resolute-amd64.tar.xz"
     },
     {
       "distro": "ubuntu",
@@ -89,9 +89,9 @@
       "uname": "aarch64",
       "qemu": "qemu-aarch64",
       "filename": "ubuntu-26.04.1-resolute-arm64.tar.xz",
-      "sha256": "243dd8108dff31318e7b8a3eebd157011c0ce4fa4d2c95b9e7bbc7c6141160b2",
-      "size": 28755892,
-      "url": "https://github.com/BoxOSLab/BoxRootfs/releases/download/2026.10.24.2/ubuntu-26.04.1-resolute-arm64.tar.xz"
+      "sha256": "4af87724c5b167693c450a7a0a6269c98a5e2dfcd8419d0228d1474fcecbf990",
+      "size": 28762668,
+      "url": "https://github.com/BoxOSLab/BoxRootfs/releases/download/2026.10.26/ubuntu-26.04.1-resolute-arm64.tar.xz"
     }
   ]
 }
